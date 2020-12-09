@@ -32,11 +32,9 @@ stages:
       inputs:
         restoreSolution: '$(solutionFile)'
 
-    - task: ResharperCli@2
-      timeoutInMinutes: 5
+    - task: PowerShell@2
       inputs:
-        solutionOrProjectPath: '$(resharperSolution)'
-        buildId: '$(version)'
+        filePath: '$(solutionName)/ReSharperCodeAnalysisScript.ps1'
 
     - task: DeleteFiles@1
       displayName: 'Delete ReSharper from staging directory'
