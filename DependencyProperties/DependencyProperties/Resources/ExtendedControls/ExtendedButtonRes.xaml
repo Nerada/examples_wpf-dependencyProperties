@@ -83,7 +83,7 @@
                             <Setter Property="HorizontalAlignment" TargetName="content" Value="Left"/>
                         </MultiTrigger>
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter Property="Background" TargetName="border" Value="DarkSlateGray" />
+                            <Setter Property="Background" TargetName="border" Value="Gray" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

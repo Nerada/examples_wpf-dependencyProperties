@@ -8,6 +8,13 @@
         public MainWindow()
         {
             InitializeComponent();
+
+            Loaded += (_, __) => MainWindowLoaded();
+        }
+
+        private void MainWindowLoaded()
+        {
+            DataContext = new MainWindowViewModel();
         }
     }
 }
