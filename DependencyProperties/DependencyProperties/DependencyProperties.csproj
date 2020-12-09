@@ -5,8 +5,12 @@
     <UseWPF>true</UseWPF>
     <Authors>Ramon Bollen</Authors>
     <Company>RamBo</Company>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <Folder Include="Resources\" />
+    <Folder Include="Resources\ExtendedControls\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Prism.Core" Version="8.0.0.1909" />
   </ItemGroup>
 </Project>

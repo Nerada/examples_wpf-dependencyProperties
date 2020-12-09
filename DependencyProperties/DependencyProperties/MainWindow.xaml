@@ -1,0 +1,24 @@
+﻿<Window x:Class="DependencyProperties.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:extendedcontrols="clr-namespace:DependencyProperties.Resources.ExtendedControls"
+        xmlns:dependencyProperties="clr-namespace:DependencyProperties"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance dependencyProperties:MainWindowViewModel}"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <ScrollViewer>
+            <extendedcontrols:ExtendedButton 
+                Width="200"
+                Height="100"
+                Content="Content1" 
+                Content2="Content2" 
+                Background="OrangeRed" 
+                BackgroundHoverColor="Orange" 
+                Foreground="DarkSalmon" 
+                ForegroundHoverColor="Red"/>
+        </ScrollViewer>
+    </Grid>
+</Window>
