@@ -22,16 +22,19 @@ namespace DependencyProperties.Resources.ExtendedControls
 
         public SegmentedScrollBar()
         {
-            Scroll += (sender, args) => OnScroll();
+            Scroll += (_, __) => CheckSegmentBoundaries();
 
-            _segmentDrawing   = new SegmentedScrollBarSegmentDrawing(this);
+            //PreviewMouseUp += (_, __) => CheckSegmentBoundaries();
+
+            _segmentDrawing = new SegmentedScrollBarSegmentDrawing(this);
 
             PreviousSegmentCommand = new DelegateCommand(() => OnButtonClick(ButtonType.LeftButton),  CanExecutePreviousSegmentCommand);
             NextSegmentCommand     = new DelegateCommand(() => OnButtonClick(ButtonType.RightButton), CanExecuteNextSegmentCommand);
         }
 
         public static readonly DependencyProperty SegmentBoundariesProperty =
-            DependencyProperty.Register("SegmentBoundaries", typeof(List<double>), typeof(SegmentedScrollBar), new PropertyMetadata(default(List<double>), SegmentBoundariesChangedCallback));
+            DependencyProperty.Register("SegmentBoundaries", typeof(List<double>), typeof(SegmentedScrollBar),
+                                        new PropertyMetadata(default(List<double>), SegmentBoundariesChangedCallback));
 
         public static readonly DependencyProperty PreviousSegmentCommandProperty =
             DependencyProperty.Register("PreviousSegmentCommand", typeof(DelegateCommand), typeof(SegmentedScrollBar));
@@ -128,14 +131,6 @@ namespace DependencyProperties.Resources.ExtendedControls
         }
 
         /// <summary>
-        /// Scroll segment jump behavior
-        /// </summary>
-        private void OnScroll()
-        {
-            CheckSegmentBoundaries();
-        }
-
-        /// <summary>
         /// Check if ScrollBar thumb is at a segment boundary. Introduce jumping behaviour.
         /// </summary>
         private void CheckSegmentBoundaries()
@@ -179,17 +174,17 @@ namespace DependencyProperties.Resources.ExtendedControls
 
                 double relativeBoundaryPosition = segmentBoundary / fullBar;
 
-                return relativeBoundaryPosition * _scrollBar.Track.ActualWidth;
+                return relativeBoundaryPosition * (_scrollBar.Orientation == Orientation.Horizontal ? _scrollBar.Track.ActualWidth : _scrollBar.Track.ActualHeight);
             }
 
             private Line CreateBoundaryLine(double pixelPosition) =>
                 new Line
                 {
                     Stroke          = new SolidColorBrush(Colors.OrangeRed),
-                    X1              = pixelPosition,
-                    X2              = pixelPosition,
-                    Y1              = 0,
-                    Y2              = _scrollBar.Track.ActualHeight,
+                    X1              = _scrollBar.Orientation == Orientation.Horizontal ? pixelPosition : 0,
+                    X2              = _scrollBar.Orientation == Orientation.Horizontal ? pixelPosition : _scrollBar.Track.ActualWidth,
+                    Y1              = _scrollBar.Orientation == Orientation.Horizontal ? 0 : pixelPosition,
+                    Y2              = _scrollBar.Orientation == Orientation.Horizontal ? _scrollBar.Track.ActualHeight : pixelPosition,
                     StrokeThickness = 2,
                 };
         }

@@ -31,6 +31,7 @@
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Focusable" Value="false" />
         <Setter Property="IsTabStop" Value="false" />
+        <Setter Property="Cursor" Value="Hand"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type RepeatButton}">
@@ -48,6 +49,7 @@
         <Setter Property="Padding" Value="1" />
         <Setter Property="Focusable" Value="false" />
         <Setter Property="IsTabStop" Value="false" />
+        <Setter Property="Cursor" Value="Hand"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type RepeatButton}">
@@ -88,6 +90,7 @@
     <Style x:Key="ScrollBarThumbVertical" TargetType="{x:Type Thumb}">
         <Setter Property="OverridesDefaultStyle" Value="true" />
         <Setter Property="IsTabStop" Value="false" />
+        <Setter Property="Cursor" Value="Hand"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Thumb}">
@@ -111,6 +114,7 @@
     <Style x:Key="ScrollBarThumbHorizontal" TargetType="{x:Type Thumb}">
         <Setter Property="OverridesDefaultStyle" Value="true" />
         <Setter Property="IsTabStop" Value="false" />
+        <Setter Property="Cursor" Value="Hand"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Thumb}">
@@ -163,16 +167,24 @@
                                       IsEnabled="{TemplateBinding IsMouseOver}"
                                       Style="{StaticResource ScrollBarButton}">
                             <Path x:Name="SegmentArrowTop"
-                                  Data="M 0,4 C0,4 0,6 0,6 0,6 3.5,2.5 3.5,2.5 3.5,2.5 7,6 7,6 7,6 7,4 7,4 7,4 3.5,0.5 3.5,0.5 3.5,0.5 0,4 0,4 z"
-                                  Fill="{StaticResource ScrollBar.Static.Glyph}" Margin="3,4,3,3" Stretch="Uniform" />
+                                  Data="M6,18L14.5,12L6,6L6,18Z M8,9.86L11.03,12L6,15.5L6,8.5Z M16,6L18,6L18,18L16,18L16,6Z"
+                                  Fill="{StaticResource ScrollBar.Static.Glyph}" Margin="2" Stretch="Uniform">
+                                <Path.LayoutTransform>
+                                    <RotateTransform Angle="270"/>
+                                </Path.LayoutTransform>
+                            </Path>
                         </RepeatButton>
                         <RepeatButton x:Name="PART_LineUpButton" Grid.Row="1"
                                       Command="{x:Static ScrollBar.LineUpCommand}"
                                       IsEnabled="{TemplateBinding IsMouseOver}"
                                       Style="{StaticResource ScrollBarButton}">
                             <Path x:Name="ArrowTop"
-                                  Data="M 0,4 C0,4 0,6 0,6 0,6 3.5,2.5 3.5,2.5 3.5,2.5 7,6 7,6 7,6 7,4 7,4 7,4 3.5,0.5 3.5,0.5 3.5,0.5 0,4 0,4 z"
-                                  Fill="{StaticResource ScrollBar.Static.Glyph}" Margin="3,4,3,3" Stretch="Uniform" />
+                                  Data="M6,18L14.5,12L6,6L6,18Z M8,9.86L11.03,12L6,15.5L6,8.5Z"
+                                  Fill="{StaticResource ScrollBar.Static.Glyph}" Margin="2" Stretch="Uniform">
+                                <Path.LayoutTransform>
+                                    <RotateTransform Angle="270"/>
+                                </Path.LayoutTransform>
+                            </Path>
                         </RepeatButton>
                         <Track x:Name="PART_Track" Grid.Row="2" IsEnabled="{TemplateBinding IsMouseOver}"
                                IsDirectionReversed="true">
@@ -193,16 +205,24 @@
                                       IsEnabled="{TemplateBinding IsMouseOver}"
                                       Style="{StaticResource ScrollBarButton}">
                             <Path x:Name="ArrowBottom"
-                                  Data="M 0,2.5 C0,2.5 0,0.5 0,0.5 0,0.5 3.5,4 3.5,4 3.5,4 7,0.5 7,0.5 7,0.5 7,2.5 7,2.5 7,2.5 3.5,6 3.5,6 3.5,6 0,2.5 0,2.5 z"
-                                  Fill="{StaticResource ScrollBar.Static.Glyph}" Margin="3,4,3,3" Stretch="Uniform" />
+                                  Data="M6,18L14.5,12L6,6L6,18Z M8,9.86L11.03,12L6,15.5L6,8.5Z"
+                                  Fill="{StaticResource ScrollBar.Static.Glyph}" Margin="2" Stretch="Uniform">
+                                <Path.LayoutTransform>
+                                    <RotateTransform Angle="90"/>
+                                </Path.LayoutTransform>
+                            </Path>
                         </RepeatButton>
                         <RepeatButton x:Name="PART_SegmentDownButton" Grid.Row="4"
                                       Command="{TemplateBinding NextSegmentCommand}"
                                       IsEnabled="{TemplateBinding IsMouseOver}"
                                       Style="{StaticResource ScrollBarButton}">
                             <Path x:Name="SegmentArrowBottom"
-                                  Data="M 0,2.5 C0,2.5 0,0.5 0,0.5 0,0.5 3.5,4 3.5,4 3.5,4 7,0.5 7,0.5 7,0.5 7,2.5 7,2.5 7,2.5 3.5,6 3.5,6 3.5,6 0,2.5 0,2.5 z"
-                                  Fill="{StaticResource ScrollBar.Static.Glyph}" Margin="3,4,3,3" Stretch="Uniform" />
+                                  Data="M6,18L14.5,12L6,6L6,18Z M8,9.86L11.03,12L6,15.5L6,8.5Z M16,6L18,6L18,18L16,18L16,6Z"
+                                  Fill="{StaticResource ScrollBar.Static.Glyph}" Margin="2" Stretch="Uniform">
+                                <Path.LayoutTransform>
+                                    <RotateTransform Angle="90"/>
+                                </Path.LayoutTransform>
+                            </Path>
                         </RepeatButton>
                         <Canvas Grid.Row="2" x:Name="PART_Canvas" />
                     </Grid>
@@ -326,16 +346,24 @@
                                               IsEnabled="{TemplateBinding IsMouseOver}"
                                               Style="{StaticResource ScrollBarButton}">
                                     <Path x:Name="SegmentArrowLeft"
-                                          Data="M16.681 18.375c.183.153.287.354.313.604.026.25-.039.472-.195.667-.17.236-.391.354-.665.354-.196 0-.372-.07-.528-.208L8.565 13.75v5.5c0 .208-.069.385-.206.531-.137.146-.303.219-.498.219h-.157c-.195 0-.362-.073-.499-.219-.137-.146-.205-.323-.205-.531V4.75c0-.208.068-.385.205-.531.137-.146.304-.219.5-.219h.156c.195 0 .361.073.498.219.137.146.206.323.206.531v5.458l7.002-6c.182-.152.39-.215.626-.187.234.028.427.139.576.333.15.195.212.417.186.667-.026.25-.13.451-.313.604L9.21 11.979l7.471 6.396z"
-                                          Fill="{StaticResource ScrollBar.Static.Glyph}" Margin="3" Stretch="Uniform" />
+                                          Data="M6,18L14.5,12L6,6L6,18Z M8,9.86L11.03,12L6,15.5L6,8.5Z M16,6L18,6L18,18L16,18L16,6Z"
+                                          Fill="{StaticResource ScrollBar.Static.Glyph}" Margin="2" Stretch="Uniform">
+                                        <Path.LayoutTransform>
+                                            <RotateTransform Angle="180"/>
+                                        </Path.LayoutTransform>
+                                    </Path>
                                 </RepeatButton>
                                 <RepeatButton x:Name="PART_LineLeftButton" Grid.Column="1"
                                               Command="{x:Static ScrollBar.LineLeftCommand}"
                                               IsEnabled="{TemplateBinding IsMouseOver}"
                                               Style="{StaticResource ScrollBarButton}">
                                     <Path x:Name="ArrowLeft"
-                                          Data="M 3.18,7 C3.18,7 5,7 5,7 5,7 1.81,3.5 1.81,3.5 1.81,3.5 5,0 5,0 5,0 3.18,0 3.18,0 3.18,0 0,3.5 0,3.5 0,3.5 3.18,7 3.18,7 z"
-                                          Fill="{StaticResource ScrollBar.Static.Glyph}" Margin="3" Stretch="Uniform" />
+                                          Data="M6,18L14.5,12L6,6L6,18Z M8,9.86L11.03,12L6,15.5L6,8.5Z"
+                                          Fill="{StaticResource ScrollBar.Static.Glyph}" Margin="2" Stretch="Uniform">
+                                        <Path.LayoutTransform>
+                                            <RotateTransform Angle="180"/>
+                                        </Path.LayoutTransform>
+                                    </Path>
                                 </RepeatButton>
                                 <Track x:Name="PART_Track" Grid.Column="2" IsEnabled="{TemplateBinding IsMouseOver}">
                                     <Track.DecreaseRepeatButton>
@@ -355,16 +383,25 @@
                                               IsEnabled="{TemplateBinding IsMouseOver}"
                                               Style="{StaticResource ScrollBarButton}">
                                     <Path x:Name="ArrowRight"
-                                          Data="M 1.81,7 C1.81,7 0,7 0,7 0,7 3.18,3.5 3.18,3.5 3.18,3.5 0,0 0,0 0,0 1.81,0 1.81,0 1.81,0 5,3.5 5,3.5 5,3.5 1.81,7 1.81,7 z"
-                                          Fill="{StaticResource ScrollBar.Static.Glyph}" Margin="3" Stretch="Uniform" />
+                                          Data="M6,18L14.5,12L6,6L6,18Z M8,9.86L11.03,12L6,15.5L6,8.5Z"
+                                          Fill="{StaticResource ScrollBar.Static.Glyph}" Margin="2" Stretch="Uniform">
+                                        <Path.LayoutTransform>
+                                            <RotateTransform Angle="0"/>
+                                        </Path.LayoutTransform>
+                                    </Path>
                                 </RepeatButton>
                                 <RepeatButton x:Name="PART_SegmentRightButton" Grid.Column="4"
                                               Command="{TemplateBinding NextSegmentCommand}"
                                               IsEnabled="{TemplateBinding IsMouseOver}"
                                               Style="{StaticResource ScrollBarButton}">
+                                    <!-- https://freeicons.io/filter/popular/all/next?page=2 -->
                                     <Path x:Name="SegmentArrowRight"
-                                          Data="M7.319 18.375l7.47-6.396-7.431-6.354c-.183-.153-.287-.354-.313-.604-.026-.25.036-.472.186-.667.15-.194.342-.305.576-.333.235-.028.444.035.626.187l7.002 6V4.75c0-.208.069-.385.206-.531.137-.146.303-.219.498-.219h.157c.195 0 .362.073.499.219.137.146.205.323.205.531v14.5c0 .208-.068.385-.205.531-.137.146-.304.219-.5.219h-.156c-.195 0-.361-.073-.498-.219-.137-.146-.206-.323-.206-.531v-5.5l-7.04 6.042c-.157.139-.333.208-.529.208-.274 0-.495-.118-.665-.354-.156-.195-.221-.417-.195-.667.026-.25.13-.451.313-.604z"
-                                          Fill="{StaticResource ScrollBar.Static.Glyph}" Margin="3" Stretch="Uniform" />
+                                          Data="M6,18L14.5,12L6,6L6,18Z M8,9.86L11.03,12L6,15.5L6,8.5Z M16,6L18,6L18,18L16,18L16,6Z"
+                                          Fill="{StaticResource ScrollBar.Static.Glyph}" Margin="2" Stretch="Uniform">
+                                        <Path.LayoutTransform>
+                                            <RotateTransform Angle="0"/>
+                                        </Path.LayoutTransform>
+                                    </Path>
                                 </RepeatButton>
                                 <Canvas Grid.Column="2" x:Name="PART_Canvas" />
                             </Grid>

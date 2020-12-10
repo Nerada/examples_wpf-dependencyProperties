@@ -28,6 +28,15 @@
             SegmentBoundaries="{Binding Segments}"
             Maximum="175"
             ViewportSize="25"
-            SmallChange="10"/>
+            SmallChange="10"
+            Margin="0,0,18,0"/>
+
+        <extendedcontrols:SegmentedScrollBar 
+            HorizontalAlignment="Right"
+            SegmentBoundaries="{Binding Segments}"
+            Maximum="175"
+            ViewportSize="25"
+            SmallChange="10"
+            Margin="0,0,0,18"/>
     </Grid>
 </Window>
