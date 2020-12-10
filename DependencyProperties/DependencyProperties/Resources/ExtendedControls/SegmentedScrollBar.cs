@@ -85,27 +85,25 @@ namespace DependencyProperties.Resources.ExtendedControls
             // If we go to the left direction - set scrollbar value to the end of the previous segment.
             // If the direction is to the right - to the beginning of the next segment.
 
-            int segmentIndex;
+            double segmentValue;
 
             // Get current segment
             switch (buttonType)
             {
                 case ButtonType.LeftButton:
-                    segmentIndex = Boundaries.IndexOf(Boundaries.LastOrDefault(b => b <= Value));
+                    segmentValue = Boundaries.LastOrDefault(b => b <= Value);
                     break;
                 case ButtonType.RightButton:
-                    segmentIndex = Boundaries.IndexOf(Boundaries.FirstOrDefault(b => b > Value));
+                    segmentValue = Boundaries.FirstOrDefault(b => b > Value);
                     break;
                 default:
                     throw new ArgumentException(@$"{nameof(OnButtonClick)}: + Unsupported button type used.");
             }
 
             // Check if there is no right/left
-            if (segmentIndex < 0 || segmentIndex >= Boundaries.Count) return;
+            if (segmentValue == 0) return;
 
-            double boundaryValue = Boundaries[segmentIndex];
-
-            Value = buttonType == ButtonType.LeftButton ? boundaryValue - ViewportSize : boundaryValue;
+            Value = buttonType == ButtonType.LeftButton ? segmentValue - ViewportSize : segmentValue;
         }
 
         private new double Value
