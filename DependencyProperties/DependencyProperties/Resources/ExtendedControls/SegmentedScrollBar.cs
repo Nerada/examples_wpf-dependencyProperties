@@ -22,9 +22,9 @@ namespace DependencyProperties.Resources.ExtendedControls
 
         public SegmentedScrollBar()
         {
-            Scroll += (_, __) => CheckSegmentBoundaries();
+            //Scroll += (_, __) => CheckSegmentBoundaries();
 
-            //PreviewMouseUp += (_, __) => CheckSegmentBoundaries();
+            PreviewMouseUp += (_, __) => CheckSegmentBoundaries();
 
             _segmentDrawing = new SegmentedScrollBarSegmentDrawing(this);
 
@@ -135,6 +135,9 @@ namespace DependencyProperties.Resources.ExtendedControls
         /// </summary>
         private void CheckSegmentBoundaries()
         {
+            // CanExecute does not update without this
+            Value = Value;
+
             double? boundaryValue = Boundaries.Find(s => s > Value && s < (Value + ViewportSize));
 
             if (!(boundaryValue is {} boundary) || boundary == 0) return;
