@@ -8,7 +8,7 @@
     <Style TargetType="{x:Type extendedControls:ExtendedButton}">
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="FontFamily" Value="Microsoft Sans Serif" />
-        <Setter Property="IsTabStop" Value="True"/>
+        <Setter Property="IsTabStop" Value="True" />
         <Setter Property="WindowChrome.IsHitTestVisibleInChrome" Value="True" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Template">
@@ -27,8 +27,8 @@
                                    Grid.Column="0"
                                    VerticalAlignment="Center"
                                    Stretch="Uniform"
-                                   Margin="{Binding Path=ImageMargin, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type extendedControls:ExtendedButton}}}" 
-                                   Visibility="Collapsed"/>
+                                   Margin="{Binding Path=ImageMargin, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type extendedControls:ExtendedButton}}}"
+                                   Visibility="Collapsed" />
                             <TextBlock x:Name="content"
                                        Grid.Column="1"
                                        Cursor="{Binding Path=Cursor, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type extendedControls:ExtendedButton}}}"
@@ -70,18 +70,20 @@
                                     Value="{Binding Path=ForegroundHoverColor, RelativeSource={RelativeSource AncestorType={x:Type extendedControls:ExtendedButton}}}" />
                         </MultiTrigger>
                         <Trigger Property="HasImage" Value="True">
-                            <Setter Property="Source" TargetName="image" Value="{Binding Path=Image, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type extendedControls:ExtendedButton}}}" />
+                            <Setter Property="Source" TargetName="image"
+                                    Value="{Binding Path=Image, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type extendedControls:ExtendedButton}}}" />
                             <Setter Property="Visibility" TargetName="image" Value="Visible" />
-                            <Setter Property="HorizontalAlignment" TargetName="content" Value="Left"/>
+                            <Setter Property="HorizontalAlignment" TargetName="content" Value="Left" />
                         </Trigger>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
                                 <Condition Property="HasImageHover" Value="true" />
                                 <Condition Property="IsMouseOver" Value="true" />
                             </MultiTrigger.Conditions>
-                            <Setter Property="Source" TargetName="image" Value="{Binding Path=ImageHover, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type extendedControls:ExtendedButton}}}" />
+                            <Setter Property="Source" TargetName="image"
+                                    Value="{Binding Path=ImageHover, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type extendedControls:ExtendedButton}}}" />
                             <Setter Property="Visibility" TargetName="image" Value="Visible" />
-                            <Setter Property="HorizontalAlignment" TargetName="content" Value="Left"/>
+                            <Setter Property="HorizontalAlignment" TargetName="content" Value="Left" />
                         </MultiTrigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Property="Background" TargetName="border" Value="Gray" />

@@ -1,4 +1,10 @@
-﻿using System;
+﻿// -----------------------------------------------
+//     Author: Ramon Bollen
+//      File: DependencyProperties.SegmentedScrollBar.cs
+// Created on: 20201208
+// -----------------------------------------------
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
@@ -12,28 +18,6 @@ namespace DependencyProperties.Resources.ExtendedControls
 {
     public class SegmentedScrollBar : ScrollBar
     {
-        private enum ButtonType
-        {
-            LeftSegmentButton,
-            RightSegmentButton,
-        }
-
-        private readonly SegmentedScrollBarSegmentDrawing _segmentDrawing;
-
-        public SegmentedScrollBar()
-        {
-            //Scroll += (_, __) => CheckSegmentBoundaries();
-
-            MouseEnter += (_, __) => CheckNavigation();
-            MouseLeave += (_, __) => CheckNavigation();
-            ValueChanged += (_, __) => CheckNavigation();
-
-            _segmentDrawing = new SegmentedScrollBarSegmentDrawing(this);
-
-            PreviousSegmentCommand = new DelegateCommand(() => OnButtonClick(ButtonType.LeftSegmentButton),  CanExecutePreviousSegmentCommand);
-            NextSegmentCommand     = new DelegateCommand(() => OnButtonClick(ButtonType.RightSegmentButton), CanExecuteNextSegmentCommand);
-        }
-
         public static readonly DependencyProperty CanExecutePreviousCommandProperty =
             DependencyProperty.Register("CanExecutePreviousCommand", typeof(bool), typeof(SegmentedScrollBar));
 
@@ -50,9 +34,20 @@ namespace DependencyProperties.Resources.ExtendedControls
         public static readonly DependencyProperty NextSegmentCommandProperty =
             DependencyProperty.Register("NextSegmentCommand", typeof(DelegateCommand), typeof(SegmentedScrollBar));
 
-        private static void SegmentBoundariesChangedCallback(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
+        private readonly SegmentedScrollBarSegmentDrawing _segmentDrawing;
+
+        public SegmentedScrollBar()
         {
-            (dependencyObject as SegmentedScrollBar)?.UpdateBoundaries();
+            //Scroll += (_, __) => CheckSegmentBoundaries();
+
+            MouseEnter   += (_, __) => CheckNavigation();
+            MouseLeave   += (_, __) => CheckNavigation();
+            ValueChanged += (_, __) => CheckNavigation();
+
+            _segmentDrawing = new SegmentedScrollBarSegmentDrawing(this);
+
+            PreviousSegmentCommand = new DelegateCommand(() => OnButtonClick(ButtonType.LeftSegmentButton),  CanExecutePreviousSegmentCommand);
+            NextSegmentCommand     = new DelegateCommand(() => OnButtonClick(ButtonType.RightSegmentButton), CanExecuteNextSegmentCommand);
         }
 
         public List<double>? SegmentBoundaries
@@ -97,15 +92,23 @@ namespace DependencyProperties.Resources.ExtendedControls
             }
         }
 
+        private static void SegmentBoundariesChangedCallback(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
+        {
+            (dependencyObject as SegmentedScrollBar)?.UpdateBoundaries();
+        }
+
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
 
-            if (_segmentDrawing.ScrollBarCanvas != null || !(Template.FindName(@"PART_Canvas", this) is Canvas canvas)) return;
+            if (_segmentDrawing.ScrollBarCanvas != null || !(Template.FindName(@"PART_Canvas", this) is Canvas canvas))
+            {
+                return;
+            }
 
-            Track.Thumb.LostMouseCapture += (_, __) => CheckSegmentBoundaries();
+            Track.Thumb.LostMouseCapture  += (_, __) => CheckSegmentBoundaries();
             Track.Thumb.LostStylusCapture += (_, __) => CheckSegmentBoundaries();
-            Track.Thumb.LostTouchCapture += (_, __) => CheckSegmentBoundaries();
+            Track.Thumb.LostTouchCapture  += (_, __) => CheckSegmentBoundaries();
 
             _segmentDrawing.ScrollBarCanvas = canvas;
 
@@ -120,13 +123,16 @@ namespace DependencyProperties.Resources.ExtendedControls
 
         private void CheckNavigation()
         {
-            CanExecutePreviousCommand = IsMouseOver && Math.Abs(Value - Minimum) > double.Epsilon;
-            CanExecuteNextCommand = IsMouseOver && Math.Abs(Maximum - Value) > double.Epsilon;
+            CanExecutePreviousCommand = IsMouseOver && Math.Abs(Value   - Minimum) > double.Epsilon;
+            CanExecuteNextCommand     = IsMouseOver && Math.Abs(Maximum - Value)   > double.Epsilon;
         }
 
         private void UpdateBoundaries()
         {
-            if (!(SegmentBoundaries is {})) return;
+            if (!(SegmentBoundaries is {}))
+            {
+                return;
+            }
 
             CheckSegmentBoundaries();
             _segmentDrawing.DrawSegmentBoundaries(SegmentBoundaries);
@@ -158,26 +164,38 @@ namespace DependencyProperties.Resources.ExtendedControls
             }
 
             // Check if there is no right/left
-            if (!(segmentValue is {} segValue) || segValue == 0) return;
+            if (!(segmentValue is {} segValue) || segValue == 0)
+            {
+                return;
+            }
 
             Value = buttonType == ButtonType.LeftSegmentButton ? segValue - ViewportSize : segValue;
         }
 
         /// <summary>
-        /// Check if ScrollBar thumb is at a segment boundary. Introduce jumping behaviour.
+        ///     Check if ScrollBar thumb is at a segment boundary. Introduce jumping behaviour.
         /// </summary>
         private void CheckSegmentBoundaries()
         {
             RaiseAllCanExecuteChanged();
 
-            double? boundaryValue = Boundaries.Find(s => s > Value && s < (Value + ViewportSize));
+            double? boundaryValue = Boundaries.Find(s => s > Value && s < Value + ViewportSize);
 
-            if (!(boundaryValue is {} boundary) || boundary == 0) return;
+            if (!(boundaryValue is {} boundary) || boundary == 0)
+            {
+                return;
+            }
 
-            double halfThumbValue = Value + (ViewportSize / 2);
+            double halfThumbValue = Value + ViewportSize / 2;
 
             // Jump to the left or right of a segment boundary
             Value = halfThumbValue < boundary ? boundary - ViewportSize : boundary;
+        }
+
+        private enum ButtonType
+        {
+            LeftSegmentButton,
+            RightSegmentButton
         }
 
         private class SegmentedScrollBarSegmentDrawing
@@ -193,7 +211,10 @@ namespace DependencyProperties.Resources.ExtendedControls
 
             public void DrawSegmentBoundaries(List<double> segmentBoundaries)
             {
-                if (ScrollBarCanvas == null) return;
+                if (ScrollBarCanvas == null)
+                {
+                    return;
+                }
 
                 ScrollBarCanvas?.Children.Clear();
 
@@ -220,7 +241,7 @@ namespace DependencyProperties.Resources.ExtendedControls
                     X2              = _scrollBar.Orientation == Orientation.Horizontal ? pixelPosition : _scrollBar.Track.ActualWidth,
                     Y1              = _scrollBar.Orientation == Orientation.Horizontal ? 0 : pixelPosition,
                     Y2              = _scrollBar.Orientation == Orientation.Horizontal ? _scrollBar.Track.ActualHeight : pixelPosition,
-                    StrokeThickness = 2,
+                    StrokeThickness = 2
                 };
         }
     }

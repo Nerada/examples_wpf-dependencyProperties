@@ -9,34 +9,34 @@
         d:DataContext="{d:DesignInstance dependencyProperties:MainWindowViewModel}"
         Title="Dependency properties demo" Height="450" Width="800">
     <Grid>
-        <extendedcontrols:ExtendedButton 
-                Width="200"
-                Height="100"
-                Content="Content1 " 
-                Content2="Content2" 
-                Image="{StaticResource BurgerMenuDrawingImage}"
-                ImageHover="{StaticResource AddDrawingImage}"
-                ImageMargin="20, 20, 5, 20"
-                Background="OrangeRed" 
-                BackgroundHoverColor="Orange" 
-                Foreground="Orange" 
-                ForegroundHoverColor="Red"/>
+        <extendedcontrols:ExtendedButton
+            Width="200"
+            Height="100"
+            Content="Content1 "
+            Content2="Content2"
+            Image="{StaticResource BurgerMenuDrawingImage}"
+            ImageHover="{StaticResource AddDrawingImage}"
+            ImageMargin="20, 20, 5, 20"
+            Background="OrangeRed"
+            BackgroundHoverColor="Orange"
+            Foreground="Orange"
+            ForegroundHoverColor="Red" />
 
-        <extendedcontrols:SegmentedScrollBar 
-            Orientation="Horizontal" 
+        <extendedcontrols:SegmentedScrollBar
+            Orientation="Horizontal"
             VerticalAlignment="Bottom"
             SegmentBoundaries="{Binding Segments}"
             Maximum="175"
             ViewportSize="25"
             SmallChange="10"
-            Margin="0,0,18,0"/>
+            Margin="0,0,18,0" />
 
-        <extendedcontrols:SegmentedScrollBar 
+        <extendedcontrols:SegmentedScrollBar
             HorizontalAlignment="Right"
             SegmentBoundaries="{Binding Segments}"
             Maximum="175"
             ViewportSize="25"
             SmallChange="10"
-            Margin="0,0,0,18"/>
+            Margin="0,0,0,18" />
     </Grid>
 </Window>

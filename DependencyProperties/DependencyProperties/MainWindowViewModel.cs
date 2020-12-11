@@ -1,4 +1,10 @@
-﻿using System.Collections.Generic;
+﻿// -----------------------------------------------
+//     Author: Ramon Bollen
+//      File: DependencyProperties.MainWindowViewModel.cs
+// Created on: 20201211
+// -----------------------------------------------
+
+using System.Collections.Generic;
 
 namespace DependencyProperties
 {

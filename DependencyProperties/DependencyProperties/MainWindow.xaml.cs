@@ -1,4 +1,10 @@
-﻿namespace DependencyProperties
+﻿// -----------------------------------------------
+//     Author: Ramon Bollen
+//      File: DependencyProperties.MainWindow.xaml.cs
+// Created on: 20201209
+// -----------------------------------------------
+
+namespace DependencyProperties
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

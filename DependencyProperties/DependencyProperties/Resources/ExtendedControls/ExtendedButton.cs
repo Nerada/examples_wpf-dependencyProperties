@@ -1,4 +1,10 @@
-﻿using System.Windows;
+﻿// -----------------------------------------------
+//     Author: Ramon Bollen
+//      File: DependencyProperties.ExtendedButton.cs
+// Created on: 20201201
+// -----------------------------------------------
+
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
