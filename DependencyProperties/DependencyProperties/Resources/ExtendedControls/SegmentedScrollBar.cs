@@ -14,8 +14,8 @@ namespace DependencyProperties.Resources.ExtendedControls
     {
         private enum ButtonType
         {
-            LeftButton,
-            RightButton,
+            LeftSegmentButton,
+            RightSegmentButton,
         }
 
         private readonly SegmentedScrollBarSegmentDrawing _segmentDrawing;
@@ -24,13 +24,21 @@ namespace DependencyProperties.Resources.ExtendedControls
         {
             //Scroll += (_, __) => CheckSegmentBoundaries();
 
-            PreviewMouseUp += (_, __) => CheckSegmentBoundaries();
+            MouseEnter += (_, __) => CheckNavigation();
+            MouseLeave += (_, __) => CheckNavigation();
+            ValueChanged += (_, __) => CheckNavigation();
 
             _segmentDrawing = new SegmentedScrollBarSegmentDrawing(this);
 
-            PreviousSegmentCommand = new DelegateCommand(() => OnButtonClick(ButtonType.LeftButton),  CanExecutePreviousSegmentCommand);
-            NextSegmentCommand     = new DelegateCommand(() => OnButtonClick(ButtonType.RightButton), CanExecuteNextSegmentCommand);
+            PreviousSegmentCommand = new DelegateCommand(() => OnButtonClick(ButtonType.LeftSegmentButton),  CanExecutePreviousSegmentCommand);
+            NextSegmentCommand     = new DelegateCommand(() => OnButtonClick(ButtonType.RightSegmentButton), CanExecuteNextSegmentCommand);
         }
+
+        public static readonly DependencyProperty CanExecutePreviousCommandProperty =
+            DependencyProperty.Register("CanExecutePreviousCommand", typeof(bool), typeof(SegmentedScrollBar));
+
+        public static readonly DependencyProperty CanExecuteNextCommandProperty =
+            DependencyProperty.Register("CanExecuteNextCommand", typeof(bool), typeof(SegmentedScrollBar));
 
         public static readonly DependencyProperty SegmentBoundariesProperty =
             DependencyProperty.Register("SegmentBoundaries", typeof(List<double>), typeof(SegmentedScrollBar),
@@ -65,7 +73,56 @@ namespace DependencyProperties.Resources.ExtendedControls
             set => SetValue(NextSegmentCommandProperty, value);
         }
 
+        public bool CanExecutePreviousCommand
+        {
+            get => (bool)GetValue(CanExecutePreviousCommandProperty);
+            set => SetValue(CanExecutePreviousCommandProperty, value);
+        }
+
+        public bool CanExecuteNextCommand
+        {
+            get => (bool)GetValue(CanExecuteNextCommandProperty);
+            set => SetValue(CanExecuteNextCommandProperty, value);
+        }
+
         private List<double> Boundaries => SegmentBoundaries ?? new List<double>();
+
+        private new double Value
+        {
+            get => (double)GetValue(ValueProperty);
+            set
+            {
+                SetValue(ValueProperty, value);
+                RaiseAllCanExecuteChanged();
+            }
+        }
+
+        public override void OnApplyTemplate()
+        {
+            base.OnApplyTemplate();
+
+            if (_segmentDrawing.ScrollBarCanvas != null || !(Template.FindName(@"PART_Canvas", this) is Canvas canvas)) return;
+
+            Track.Thumb.LostMouseCapture += (_, __) => CheckSegmentBoundaries();
+            Track.Thumb.LostStylusCapture += (_, __) => CheckSegmentBoundaries();
+            Track.Thumb.LostTouchCapture += (_, __) => CheckSegmentBoundaries();
+
+            _segmentDrawing.ScrollBarCanvas = canvas;
+
+            SizeChanged += (sender, args) => _segmentDrawing.DrawSegmentBoundaries(Boundaries);
+        }
+
+        private void RaiseAllCanExecuteChanged()
+        {
+            PreviousSegmentCommand.RaiseCanExecuteChanged();
+            NextSegmentCommand.RaiseCanExecuteChanged();
+        }
+
+        private void CheckNavigation()
+        {
+            CanExecutePreviousCommand = IsMouseOver && Math.Abs(Value - Minimum) > double.Epsilon;
+            CanExecuteNextCommand = IsMouseOver && Math.Abs(Maximum - Value) > double.Epsilon;
+        }
 
         private void UpdateBoundaries()
         {
@@ -85,15 +142,15 @@ namespace DependencyProperties.Resources.ExtendedControls
             // If we go to the left direction - set scrollbar value to the end of the previous segment.
             // If the direction is to the right - to the beginning of the next segment.
 
-            double segmentValue;
+            double? segmentValue;
 
             // Get current segment
             switch (buttonType)
             {
-                case ButtonType.LeftButton:
+                case ButtonType.LeftSegmentButton:
                     segmentValue = Boundaries.LastOrDefault(b => b <= Value);
                     break;
-                case ButtonType.RightButton:
+                case ButtonType.RightSegmentButton:
                     segmentValue = Boundaries.FirstOrDefault(b => b > Value);
                     break;
                 default:
@@ -101,31 +158,9 @@ namespace DependencyProperties.Resources.ExtendedControls
             }
 
             // Check if there is no right/left
-            if (segmentValue == 0) return;
+            if (!(segmentValue is {} segValue) || segValue == 0) return;
 
-            Value = buttonType == ButtonType.LeftButton ? segmentValue - ViewportSize : segmentValue;
-        }
-
-        private new double Value
-        {
-            get => (double)GetValue(ValueProperty);
-            set
-            {
-                SetValue(ValueProperty, value);
-                PreviousSegmentCommand.RaiseCanExecuteChanged();
-                NextSegmentCommand.RaiseCanExecuteChanged();
-            }
-        }
-
-        public override void OnApplyTemplate()
-        {
-            base.OnApplyTemplate();
-
-            if (_segmentDrawing.ScrollBarCanvas != null || !(Template.FindName(@"PART_Canvas", this) is Canvas canvas)) return;
-
-            _segmentDrawing.ScrollBarCanvas = canvas;
-
-            SizeChanged += (sender, args) => _segmentDrawing.DrawSegmentBoundaries(Boundaries);
+            Value = buttonType == ButtonType.LeftSegmentButton ? segValue - ViewportSize : segValue;
         }
 
         /// <summary>
@@ -133,8 +168,7 @@ namespace DependencyProperties.Resources.ExtendedControls
         /// </summary>
         private void CheckSegmentBoundaries()
         {
-            // CanExecute does not update without this
-            Value = Value;
+            RaiseAllCanExecuteChanged();
 
             double? boundaryValue = Boundaries.Find(s => s > Value && s < (Value + ViewportSize));
 

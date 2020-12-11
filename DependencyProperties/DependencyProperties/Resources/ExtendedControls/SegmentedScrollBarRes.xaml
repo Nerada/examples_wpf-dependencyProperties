@@ -176,7 +176,7 @@
                         </RepeatButton>
                         <RepeatButton x:Name="PART_LineUpButton" Grid.Row="1"
                                       Command="{x:Static ScrollBar.LineUpCommand}"
-                                      IsEnabled="{TemplateBinding IsMouseOver}"
+                                      IsEnabled="{TemplateBinding CanExecutePreviousCommand}"
                                       Style="{StaticResource ScrollBarButton}">
                             <Path x:Name="ArrowTop"
                                   Data="M6,18L14.5,12L6,6L6,18Z M8,9.86L11.03,12L6,15.5L6,8.5Z"
@@ -202,7 +202,7 @@
                         </Track>
                         <RepeatButton x:Name="PART_LineDownButton" Grid.Row="3"
                                       Command="{x:Static ScrollBar.LineDownCommand}"
-                                      IsEnabled="{TemplateBinding IsMouseOver}"
+                                      IsEnabled="{TemplateBinding CanExecuteNextCommand}"
                                       Style="{StaticResource ScrollBarButton}">
                             <Path x:Name="ArrowBottom"
                                   Data="M6,18L14.5,12L6,6L6,18Z M8,9.86L11.03,12L6,15.5L6,8.5Z"
@@ -355,7 +355,7 @@
                                 </RepeatButton>
                                 <RepeatButton x:Name="PART_LineLeftButton" Grid.Column="1"
                                               Command="{x:Static ScrollBar.LineLeftCommand}"
-                                              IsEnabled="{TemplateBinding IsMouseOver}"
+                                              IsEnabled="{TemplateBinding CanExecutePreviousCommand}"
                                               Style="{StaticResource ScrollBarButton}">
                                     <Path x:Name="ArrowLeft"
                                           Data="M6,18L14.5,12L6,6L6,18Z M8,9.86L11.03,12L6,15.5L6,8.5Z"
@@ -380,7 +380,7 @@
                                 </Track>
                                 <RepeatButton x:Name="PART_LineRightButton" Grid.Column="3"
                                               Command="{x:Static ScrollBar.LineRightCommand}"
-                                              IsEnabled="{TemplateBinding IsMouseOver}"
+                                              IsEnabled="{TemplateBinding CanExecuteNextCommand}"
                                               Style="{StaticResource ScrollBarButton}">
                                     <Path x:Name="ArrowRight"
                                           Data="M6,18L14.5,12L6,6L6,18Z M8,9.86L11.03,12L6,15.5L6,8.5Z"
