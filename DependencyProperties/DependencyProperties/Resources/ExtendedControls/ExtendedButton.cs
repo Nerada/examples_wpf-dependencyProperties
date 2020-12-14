@@ -169,7 +169,7 @@ namespace DependencyProperties.Resources.ExtendedControls
 
         private static void Content2ChangedCallBack(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
         {
-            if (!(dependencyObject as ExtendedButton is {} extendedButton)) return;
+            if (!(dependencyObject as ExtendedButton is { } extendedButton)) return;
 
             extendedButton.Content += (string)args.NewValue;
         }

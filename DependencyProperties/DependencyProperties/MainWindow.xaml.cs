@@ -15,7 +15,7 @@ namespace DependencyProperties
         {
             InitializeComponent();
 
-            Loaded += (_, __) => MainWindowLoaded();
+            Loaded += (_, _) => MainWindowLoaded();
         }
 
         private void MainWindowLoaded()
