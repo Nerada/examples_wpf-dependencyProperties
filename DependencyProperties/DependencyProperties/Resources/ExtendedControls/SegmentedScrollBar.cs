@@ -36,24 +36,29 @@ namespace DependencyProperties.Resources.ExtendedControls
 
         private readonly SegmentedScrollBarSegmentDrawing _segmentDrawing;
 
+        private bool _thumbDragging;
+
         public SegmentedScrollBar()
         {
-            //Scroll += (_, __) => CheckSegmentBoundaries();
-
-            MouseEnter   += (_, __) => CheckNavigation();
-            MouseLeave   += (_, __) => CheckNavigation();
-            ValueChanged += (_, __) => CheckNavigation();
+            MouseEnter   += (_, __) => NavigationCanExecuteChanged();
+            MouseLeave   += (_, __) => NavigationCanExecuteChanged();
+            ValueChanged += (_, __) => { NavigationCanExecuteChanged(); SegmentNavigationCanExecuteChanged(); };
+            ValueChanged += (_, __) => JumpOffSegmentBoundary();
 
             _segmentDrawing = new SegmentedScrollBarSegmentDrawing(this);
 
-            PreviousSegmentCommand = new DelegateCommand(() => OnButtonClick(ButtonType.LeftSegmentButton),  CanExecutePreviousSegmentCommand);
-            NextSegmentCommand     = new DelegateCommand(() => OnButtonClick(ButtonType.RightSegmentButton), CanExecuteNextSegmentCommand);
+            PreviousSegmentCommand = new DelegateCommand(() => OnButtonClick(ButtonType.LeftSegmentButton), () => CanExecutePreviousSegmentCommand);
+            NextSegmentCommand     = new DelegateCommand(() => OnButtonClick(ButtonType.RightSegmentButton), () => CanExecuteNextSegmentCommand);
         }
 
         public List<double>? SegmentBoundaries
         {
             get => (List<double>)GetValue(SegmentBoundariesProperty);
-            set => SetValue(SegmentBoundariesProperty, value);
+            set
+            {
+                SetValue(SegmentBoundariesProperty, value);
+                SegmentNavigationCanExecuteChanged();
+            }
         }
 
         public DelegateCommand PreviousSegmentCommand
@@ -80,17 +85,11 @@ namespace DependencyProperties.Resources.ExtendedControls
             set => SetValue(CanExecuteNextCommandProperty, value);
         }
 
-        private List<double> Boundaries => SegmentBoundaries ?? new List<double>();
+        public bool CanExecutePreviousSegmentCommand => Boundaries.Count != 0 && Value >= Boundaries[0];
 
-        private new double Value
-        {
-            get => (double)GetValue(ValueProperty);
-            set
-            {
-                SetValue(ValueProperty, value);
-                RaiseAllCanExecuteChanged();
-            }
-        }
+        public bool CanExecuteNextSegmentCommand => Boundaries.Count != 0 && Value < Boundaries[^1];
+
+        private List<double> Boundaries => SegmentBoundaries ?? new List<double>();
 
         private static void SegmentBoundariesChangedCallback(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
         {
@@ -106,25 +105,29 @@ namespace DependencyProperties.Resources.ExtendedControls
                 return;
             }
 
-            Track.Thumb.LostMouseCapture  += (_, __) => CheckSegmentBoundaries();
-            Track.Thumb.LostStylusCapture += (_, __) => CheckSegmentBoundaries();
-            Track.Thumb.LostTouchCapture  += (_, __) => CheckSegmentBoundaries();
+            Track.Thumb.GotMouseCapture += (_, __) => _thumbDragging = true;
+            Track.Thumb.GotStylusCapture += (_, __) => _thumbDragging = true;
+            Track.Thumb.GotTouchCapture += (_, __) => _thumbDragging = true;
+
+            Track.Thumb.LostMouseCapture += (_, __) => { _thumbDragging = false; JumpOffSegmentBoundary(); };
+            Track.Thumb.LostStylusCapture += (_, __) => { _thumbDragging = false; JumpOffSegmentBoundary(); };
+            Track.Thumb.LostTouchCapture  += (_, __) => { _thumbDragging = false; JumpOffSegmentBoundary(); };
 
             _segmentDrawing.ScrollBarCanvas = canvas;
 
             SizeChanged += (sender, args) => _segmentDrawing.DrawSegmentBoundaries(Boundaries);
         }
 
-        private void RaiseAllCanExecuteChanged()
+        private void SegmentNavigationCanExecuteChanged()
         {
             PreviousSegmentCommand.RaiseCanExecuteChanged();
             NextSegmentCommand.RaiseCanExecuteChanged();
         }
 
-        private void CheckNavigation()
+        private void NavigationCanExecuteChanged()
         {
-            CanExecutePreviousCommand = IsMouseOver && Math.Abs(Value   - Minimum) > double.Epsilon;
-            CanExecuteNextCommand     = IsMouseOver && Math.Abs(Maximum - Value)   > double.Epsilon;
+            CanExecutePreviousCommand = IsMouseOver && Math.Abs(Value - Minimum) > double.Epsilon;
+            CanExecuteNextCommand = IsMouseOver && Math.Abs(Maximum - Value) > double.Epsilon;
         }
 
         private void UpdateBoundaries()
@@ -134,13 +137,9 @@ namespace DependencyProperties.Resources.ExtendedControls
                 return;
             }
 
-            CheckSegmentBoundaries();
+            JumpOffSegmentBoundary();
             _segmentDrawing.DrawSegmentBoundaries(SegmentBoundaries);
         }
-
-        private bool CanExecutePreviousSegmentCommand() => Boundaries.Count != 0 && Value >= Boundaries[0];
-
-        private bool CanExecuteNextSegmentCommand() => Boundaries.Count != 0 && Value < Boundaries[^1];
 
         private void OnButtonClick(ButtonType buttonType)
         {
@@ -175,16 +174,13 @@ namespace DependencyProperties.Resources.ExtendedControls
         /// <summary>
         ///     Check if ScrollBar thumb is at a segment boundary. Introduce jumping behaviour.
         /// </summary>
-        private void CheckSegmentBoundaries()
+        private void JumpOffSegmentBoundary()
         {
-            RaiseAllCanExecuteChanged();
+            if (_thumbDragging) return;
 
-            double? boundaryValue = Boundaries.Find(s => s > Value && s < Value + ViewportSize);
+            double? boundaryValue = Boundaries.Find(segment => segment > Value && segment < Value + ViewportSize);
 
-            if (!(boundaryValue is {} boundary) || boundary == 0)
-            {
-                return;
-            }
+            if (!(boundaryValue is {} boundary) || boundary == 0) return;
 
             double halfThumbValue = Value + ViewportSize / 2;
 
