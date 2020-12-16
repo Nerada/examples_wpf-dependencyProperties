@@ -8,9 +8,25 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <Folder Include="Resources\ExtendedControls\" />
+    <None Remove="Images\1.jpg" />
+    <None Remove="Images\2.png" />
+    <None Remove="Images\3.jpg" />
+    <None Remove="Images\3.png" />
+    <None Remove="Images\4.jpg" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Prism.Core" Version="8.0.0.1909" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\1.jpg" />
+    <Resource Include="Images\2.png" />
+    <Resource Include="Images\3.png" />
+    <Resource Include="Images\4.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="DemoWindowExtendedButton.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
 </Project>

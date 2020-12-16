@@ -4,6 +4,8 @@
 // Created on: 20201209
 // -----------------------------------------------
 
+using System.Windows;
+
 namespace DependencyProperties
 {
     /// <summary>
@@ -11,5 +13,10 @@ namespace DependencyProperties
     /// </summary>
     public partial class App
     {
+        private void App_OnStartup(object sender, StartupEventArgs e)
+        {
+            new DemoWindowExtendedButton().Show();
+            new DemoWindowSegmentedScrollBar().Show();
+        }
     }
 }

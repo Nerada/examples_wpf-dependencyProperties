@@ -4,14 +4,12 @@
 // Created on: 20201208
 // -----------------------------------------------
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Data;
 using System.Windows.Media;
-using System.Windows.Shapes;
 using Prism.Commands;
 
 namespace DependencyProperties.Resources.ExtendedControls
@@ -28,31 +26,35 @@ namespace DependencyProperties.Resources.ExtendedControls
             DependencyProperty.Register("SegmentBoundaries", typeof(List<double>), typeof(SegmentedScrollBar),
                                         new PropertyMetadata(default(List<double>), SegmentBoundariesChangedCallback));
 
+        public static readonly DependencyProperty SegmentColorsProperty =
+            DependencyProperty.Register("SegmentColors", typeof(List<Brush>), typeof(SegmentedScrollBar),
+                                        new PropertyMetadata(default(List<Brush>), SegmentAppearanceChangedCallback));
+
+        public static readonly DependencyProperty DrawRegionsProperty =
+            DependencyProperty.Register("DrawRegions", typeof(bool), typeof(SegmentedScrollBar),
+                                        new PropertyMetadata(default(bool), SegmentAppearanceChangedCallback));
+
         public static readonly DependencyProperty PreviousSegmentCommandProperty =
             DependencyProperty.Register("PreviousSegmentCommand", typeof(DelegateCommand), typeof(SegmentedScrollBar));
 
         public static readonly DependencyProperty NextSegmentCommandProperty =
             DependencyProperty.Register("NextSegmentCommand", typeof(DelegateCommand), typeof(SegmentedScrollBar));
 
-        private readonly SegmentedScrollBarSegmentDrawing _segmentDrawing;
+        // Using a DependencyProperty as the backing store for BoundScrollViewer.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ScrollViewerProperty =
+            DependencyProperty.Register("ScrollViewer", typeof(ScrollViewer), typeof(SegmentedScrollBar),
+                                        new PropertyMetadata(default(ScrollViewer), ScrollViewerChangedCallback));
 
-        private bool _thumbDragging;
+
+        private readonly SegmentedScrollBarBehaviors _segmentedScrollBarBehaviors;
+        private readonly SegmentedScrollBarDrawing   _segmentedScrollBarDrawing;
 
         public SegmentedScrollBar()
         {
-            MouseEnter += (_, _) => NavigationCanExecuteChanged();
-            MouseLeave += (_, _) => NavigationCanExecuteChanged();
-            ValueChanged += (_, _) =>
-            {
-                NavigationCanExecuteChanged();
-                SegmentNavigationCanExecuteChanged();
-            };
-            ValueChanged += (_, _) => JumpOffSegmentBoundary();
+            _segmentedScrollBarBehaviors = new SegmentedScrollBarBehaviors(this);
+            _segmentedScrollBarDrawing   = new SegmentedScrollBarDrawing(this);
 
-            _segmentDrawing = new SegmentedScrollBarSegmentDrawing(this);
-
-            PreviousSegmentCommand = new DelegateCommand(() => OnButtonClick(ButtonType.LeftSegmentButton),  () => CanExecutePreviousSegmentCommand);
-            NextSegmentCommand     = new DelegateCommand(() => OnButtonClick(ButtonType.RightSegmentButton), () => CanExecuteNextSegmentCommand);
+            ValueChanged += (_, _) => OnScroll(this, new ScrollEventArgs(ScrollEventType.ThumbTrack, Value));
         }
 
         public List<double>? SegmentBoundaries
@@ -61,200 +63,121 @@ namespace DependencyProperties.Resources.ExtendedControls
             set
             {
                 SetValue(SegmentBoundariesProperty, value);
-                SegmentNavigationCanExecuteChanged();
+                _segmentedScrollBarBehaviors.SegmentBoundariesChanged();
             }
+        }
+
+        public List<Brush>? SegmentColors
+        {
+            get => (List<Brush>)GetValue(SegmentColorsProperty);
+            set => SetValue(SegmentColorsProperty, value);
+        }
+
+        public bool DrawRegions
+        {
+            get => (bool)GetValue(DrawRegionsProperty);
+            set => SetValue(DrawRegionsProperty, value);
         }
 
         public DelegateCommand PreviousSegmentCommand
         {
             get => (DelegateCommand)GetValue(PreviousSegmentCommandProperty);
-            private init => SetValue(PreviousSegmentCommandProperty, value);
+            set => SetValue(PreviousSegmentCommandProperty, value);
         }
 
         public DelegateCommand NextSegmentCommand
         {
             get => (DelegateCommand)GetValue(NextSegmentCommandProperty);
-            private init => SetValue(NextSegmentCommandProperty, value);
+            set => SetValue(NextSegmentCommandProperty, value);
         }
 
         public bool CanExecutePreviousCommand
         {
             get => (bool)GetValue(CanExecutePreviousCommandProperty);
-            private set => SetValue(CanExecutePreviousCommandProperty, value);
+            set => SetValue(CanExecutePreviousCommandProperty, value);
         }
 
         public bool CanExecuteNextCommand
         {
             get => (bool)GetValue(CanExecuteNextCommandProperty);
-            private set => SetValue(CanExecuteNextCommandProperty, value);
+            set => SetValue(CanExecuteNextCommandProperty, value);
         }
 
-        private bool CanExecutePreviousSegmentCommand => Boundaries.Count != 0 && Value >= Boundaries[0];
+        public ScrollViewer? ScrollViewer
+        {
+            get => (ScrollViewer)GetValue(ScrollViewerProperty);
+            set => SetValue(ScrollViewerProperty, value);
+        }
 
-        private bool CanExecuteNextSegmentCommand => Boundaries.Count != 0 && Value < Boundaries[^1];
+        private static void ScrollViewerChangedCallback(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
+        {
+            if (!(dependencyObject is SegmentedScrollBar scrollBar) || args.NewValue == null) return;
 
-        private List<double> Boundaries => SegmentBoundaries ?? new List<double>();
+            scrollBar.UpdateBindings();
+        }
 
         private static void SegmentBoundariesChangedCallback(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
         {
-            (dependencyObject as SegmentedScrollBar)?.UpdateBoundaries();
+            if (!(dependencyObject is SegmentedScrollBar scrollBar) || args.NewValue == null) return;
+            if (!(scrollBar.SegmentBoundaries is { })) return;
+
+            scrollBar._segmentedScrollBarDrawing.DrawSegmentBoundaries();
+            scrollBar._segmentedScrollBarBehaviors.SegmentBoundariesChanged();
+        }
+
+        private static void SegmentAppearanceChangedCallback(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
+        {
+            if (!(dependencyObject is SegmentedScrollBar scrollBar) || args.NewValue == null) return;
+            if (!(scrollBar.SegmentBoundaries is { })) return;
+
+            scrollBar._segmentedScrollBarDrawing.DrawSegmentBoundaries();
         }
 
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
 
-            if (_segmentDrawing.ScrollBarCanvas != null || !(Template.FindName(@"PART_Canvas", this) is Canvas canvas))
+            _segmentedScrollBarDrawing.OnApplyTemplate();
+            _segmentedScrollBarBehaviors.OnApplyTemplate();
+        }
+
+        private void UpdateBindings()
+        {
+            AddHandler(ScrollEvent, new ScrollEventHandler(OnScroll));
+
+            ScrollViewer?.AddHandler(ScrollViewer.ScrollChangedEvent, new ScrollChangedEventHandler(BoundScrollChanged));
+            Minimum = 0;
+            if (Orientation == Orientation.Horizontal)
             {
-                return;
+                SetBinding(MaximumProperty,      new Binding("ScrollableWidth") {Source = ScrollViewer, Mode = BindingMode.OneWay});
+                SetBinding(ViewportSizeProperty, new Binding("ViewportWidth") {Source   = ScrollViewer, Mode = BindingMode.OneWay});
+            }
+            else
+            {
+                SetBinding(MaximumProperty,      new Binding("ScrollableHeight") {Source = ScrollViewer, Mode = BindingMode.OneWay});
+                SetBinding(ViewportSizeProperty, new Binding("ViewportHeight") {Source   = ScrollViewer, Mode = BindingMode.OneWay});
             }
 
-            Track.Thumb.GotMouseCapture  += (_, _) => _thumbDragging = true;
-            Track.Thumb.GotStylusCapture += (_, _) => _thumbDragging = true;
-            Track.Thumb.GotTouchCapture  += (_, _) => _thumbDragging = true;
-
-            Track.Thumb.LostMouseCapture += (_, _) =>
-            {
-                _thumbDragging = false;
-                JumpOffSegmentBoundary();
-            };
-            Track.Thumb.LostStylusCapture += (_, _) =>
-            {
-                _thumbDragging = false;
-                JumpOffSegmentBoundary();
-            };
-            Track.Thumb.LostTouchCapture += (_, _) =>
-            {
-                _thumbDragging = false;
-                JumpOffSegmentBoundary();
-            };
-
-            _segmentDrawing.ScrollBarCanvas = canvas;
-
-            SizeChanged += (_, _) => _segmentDrawing.DrawSegmentBoundaries(Boundaries);
+            LargeChange = 242;
+            SmallChange = 16;
         }
 
-        private void SegmentNavigationCanExecuteChanged()
+        private void BoundScrollChanged(object sender, ScrollChangedEventArgs e)
         {
-            PreviousSegmentCommand.RaiseCanExecuteChanged();
-            NextSegmentCommand.RaiseCanExecuteChanged();
+            Value = Orientation == Orientation.Horizontal ? e.HorizontalOffset : e.VerticalOffset;
         }
 
-        private void NavigationCanExecuteChanged()
+        private void OnScroll(object sender, ScrollEventArgs e)
         {
-            CanExecutePreviousCommand = IsMouseOver && Math.Abs(Value   - Minimum) > double.Epsilon;
-            CanExecuteNextCommand     = IsMouseOver && Math.Abs(Maximum - Value)   > double.Epsilon;
-        }
-
-        private void UpdateBoundaries()
-        {
-            if (!(SegmentBoundaries is { }))
+            switch (Orientation)
             {
-                return;
-            }
-
-            JumpOffSegmentBoundary();
-            _segmentDrawing.DrawSegmentBoundaries(SegmentBoundaries);
-        }
-
-        private void OnButtonClick(ButtonType buttonType)
-        {
-            // check if it comes from the right or left button, depending on that, switch to right or left segment.
-            // If we go to the left direction - set scrollbar value to the end of the previous segment.
-            // If the direction is to the right - to the beginning of the next segment.
-
-            double? segmentValue;
-
-            // Get current segment
-            switch (buttonType)
-            {
-                case ButtonType.LeftSegmentButton:
-                    segmentValue = Boundaries.LastOrDefault(b => b <= Value);
-                    break;
-                case ButtonType.RightSegmentButton:
-                    segmentValue = Boundaries.FirstOrDefault(b => b > Value);
-                    break;
-                default:
-                    throw new ArgumentException(@$"{nameof(OnButtonClick)}: + Unsupported button type used.");
-            }
-
-            // Check if there is no right/left
-            if (!(segmentValue is { } segValue) || segValue == 0)
-            {
-                return;
-            }
-
-            Value = buttonType == ButtonType.LeftSegmentButton ? segValue - ViewportSize : segValue;
-        }
-
-        /// <summary>
-        ///     Check if ScrollBar thumb is at a segment boundary. Introduce jumping behaviour.
-        /// </summary>
-        private void JumpOffSegmentBoundary()
-        {
-            if (_thumbDragging) return;
-
-            double? boundaryValue = Boundaries.Find(segment => segment > Value && segment < Value + ViewportSize);
-
-            if (!(boundaryValue is { } boundary) || boundary == 0) return;
-
-            double halfThumbValue = Value + ViewportSize / 2;
-
-            // Jump to the left or right of a segment boundary
-            Value = halfThumbValue < boundary ? boundary - ViewportSize : boundary;
-        }
-
-        private enum ButtonType
-        {
-            LeftSegmentButton,
-            RightSegmentButton
-        }
-
-        private class SegmentedScrollBarSegmentDrawing
-        {
-            private readonly SegmentedScrollBar _scrollBar;
-
-            public SegmentedScrollBarSegmentDrawing(SegmentedScrollBar scrollBar)
-            {
-                _scrollBar = scrollBar;
-            }
-
-            public Canvas? ScrollBarCanvas { get; set; }
-
-            public void DrawSegmentBoundaries(List<double> segmentBoundaries)
-            {
-                if (ScrollBarCanvas == null)
-                {
+                case Orientation.Horizontal:
+                    ScrollViewer?.ScrollToHorizontalOffset(e.NewValue);
                     return;
-                }
-
-                ScrollBarCanvas?.Children.Clear();
-
-                foreach (double segmentBoundary in segmentBoundaries)
-                {
-                    ScrollBarCanvas?.Children.Add(CreateBoundaryLine(CalculatePixelBoundaryPosition(segmentBoundary)));
-                }
+                case Orientation.Vertical:
+                    ScrollViewer?.ScrollToVerticalOffset(e.NewValue);
+                    return;
             }
-
-            private double CalculatePixelBoundaryPosition(double segmentBoundary)
-            {
-                double fullBar = _scrollBar.Track.Maximum + _scrollBar.Track.ViewportSize;
-
-                double relativeBoundaryPosition = segmentBoundary / fullBar;
-
-                return relativeBoundaryPosition * (_scrollBar.Orientation == Orientation.Horizontal ? _scrollBar.Track.ActualWidth : _scrollBar.Track.ActualHeight);
-            }
-
-            private Line CreateBoundaryLine(double pixelPosition) =>
-                new()
-                {
-                    Stroke          = new SolidColorBrush(Colors.OrangeRed),
-                    X1              = _scrollBar.Orientation == Orientation.Horizontal ? pixelPosition : 0,
-                    X2              = _scrollBar.Orientation == Orientation.Horizontal ? pixelPosition : _scrollBar.Track.ActualWidth,
-                    Y1              = _scrollBar.Orientation == Orientation.Horizontal ? 0 : pixelPosition,
-                    Y2              = _scrollBar.Orientation == Orientation.Horizontal ? _scrollBar.Track.ActualHeight : pixelPosition,
-                    StrokeThickness = 2
-                };
         }
     }
 }

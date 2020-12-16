@@ -186,6 +186,7 @@
                                 </Path.LayoutTransform>
                             </Path>
                         </RepeatButton>
+                        <Canvas Grid.Row="2" x:Name="PART_BottomCanvas" />
                         <Track x:Name="PART_Track" Grid.Row="2" IsEnabled="{TemplateBinding IsMouseOver}"
                                IsDirectionReversed="true">
                             <Track.DecreaseRepeatButton>
@@ -200,6 +201,7 @@
                                 <Thumb Style="{StaticResource ScrollBarThumbVertical}" />
                             </Track.Thumb>
                         </Track>
+                        <Canvas Grid.Row="2" x:Name="PART_TopCanvas" />
                         <RepeatButton x:Name="PART_LineDownButton" Grid.Row="3"
                                       Command="{x:Static ScrollBar.LineDownCommand}"
                                       IsEnabled="{TemplateBinding CanExecuteNextCommand}"
@@ -224,7 +226,6 @@
                                 </Path.LayoutTransform>
                             </Path>
                         </RepeatButton>
-                        <Canvas Grid.Row="2" x:Name="PART_Canvas" />
                     </Grid>
                     <ControlTemplate.Triggers>
                         <MultiDataTrigger>
@@ -365,6 +366,7 @@
                                         </Path.LayoutTransform>
                                     </Path>
                                 </RepeatButton>
+                                <Canvas Grid.Column="2" x:Name="PART_BottomCanvas" />
                                 <Track x:Name="PART_Track" Grid.Column="2" IsEnabled="{TemplateBinding IsMouseOver}">
                                     <Track.DecreaseRepeatButton>
                                         <RepeatButton Command="{x:Static ScrollBar.PageLeftCommand}"
@@ -378,6 +380,7 @@
                                         <Thumb Style="{StaticResource ScrollBarThumbHorizontal}" />
                                     </Track.Thumb>
                                 </Track>
+                                <Canvas Grid.Column="2" x:Name="PART_TopCanvas" />
                                 <RepeatButton x:Name="PART_LineRightButton" Grid.Column="3"
                                               Command="{x:Static ScrollBar.LineRightCommand}"
                                               IsEnabled="{TemplateBinding CanExecuteNextCommand}"
@@ -403,7 +406,6 @@
                                         </Path.LayoutTransform>
                                     </Path>
                                 </RepeatButton>
-                                <Canvas Grid.Column="2" x:Name="PART_Canvas" />
                             </Grid>
                             <ControlTemplate.Triggers>
                                 <MultiDataTrigger>
