@@ -17,6 +17,8 @@ namespace DependencyProperties.Resources.ExtendedControls
 
         private bool _thumbDragging;
 
+        private bool _thumbBiggerThanSmallestSegment;
+
         public SegmentedScrollBarBehaviors(SegmentedScrollBar scrollBar)
         {
             _scrollBar = scrollBar;
@@ -36,9 +38,9 @@ namespace DependencyProperties.Resources.ExtendedControls
 
         private List<double> Boundaries => _scrollBar.SegmentBoundaries ?? new List<double>();
 
-        private bool CanExecutePreviousSegmentCommand => Boundaries.Count != 0 && _scrollBar.Value >= Boundaries[0];
+        private bool CanExecutePreviousSegmentCommand => !_thumbBiggerThanSmallestSegment && Boundaries.Count != 0 && _scrollBar.Value >= Boundaries[0];
 
-        private bool CanExecuteNextSegmentCommand => Boundaries.Count != 0 && _scrollBar.Value < Boundaries[^1];
+        private bool CanExecuteNextSegmentCommand => !_thumbBiggerThanSmallestSegment && Boundaries.Count != 0 && _scrollBar.Value < Boundaries[^1];
 
         public void SegmentBoundariesChanged()
         {
@@ -124,7 +126,7 @@ namespace DependencyProperties.Resources.ExtendedControls
         /// </summary>
         private void JumpOffSegmentBoundary()
         {
-            if (_thumbDragging) return;
+            if (_thumbDragging || _thumbBiggerThanSmallestSegment) return;
 
             double? boundaryValue = Boundaries.Find(segment => segment > _scrollBar.Value && segment < _scrollBar.Value + _scrollBar.ViewportSize);
 
@@ -139,11 +141,13 @@ namespace DependencyProperties.Resources.ExtendedControls
 
         private void CheckViewPortSize()
         {
-            //var checkBoundaries = new List<double>(Boundaries);
-            //checkBoundaries.Insert(0, 0);
-            //checkBoundaries.Add(_scrollBar.Maximum + _scrollBar.Track.ViewportSize);
+            var checkBoundaries = new List<double>(Boundaries);
+            checkBoundaries.Insert(0, 0);
+            checkBoundaries.Add(_scrollBar.Maximum + _scrollBar.Track.ViewportSize);
 
-            //double smallestSegment = SmallestDifference(checkBoundaries);
+            if (_scrollBar.ViewportSize < 1) return;
+
+            double smallestSegment = SmallestDifference(checkBoundaries);
 
             if (_scrollBar.ScrollViewer is { } scrollViewer                      &&
                 _scrollBar.ViewportSize                                      > 1 &&
@@ -153,17 +157,9 @@ namespace DependencyProperties.Resources.ExtendedControls
                 _scrollBar.ViewportSize  =  scrollViewer.ActualWidth;
                 _scrollBar.Track.Maximum += scrollViewerDiff;
 
-                //var value = _scrollBar.Track.Maximum + _scrollBar.ViewportSize;
-
-                //return;
+                _thumbBiggerThanSmallestSegment = _scrollBar.ViewportSize > smallestSegment;
+                SegmentNavigationCanExecuteChanged();
             }
-
-            //if (_scrollBar.ViewportSize < smallestSegment) return;
-
-            //double smallestSegmentDiff = _scrollBar.Track.ViewportSize - smallestSegment;
-
-            //_scrollBar.ViewportSize = smallestSegment;
-            //_scrollBar.Track.Maximum += smallestSegmentDiff;
         }
 
         public double SmallestDifference(List<double> source)
