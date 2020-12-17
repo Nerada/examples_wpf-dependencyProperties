@@ -34,8 +34,8 @@ namespace DependencyProperties.Resources.ExtendedControls
         {
             if (TopCanvas    != null                                                                  ||
                 BottomCanvas != null                                                                  ||
-                !(_scrollBar.Template.FindName(@"PART_TopCanvas",    _scrollBar) is Canvas topCanvas) ||
-                !(_scrollBar.Template.FindName(@"PART_BottomCanvas", _scrollBar) is Canvas bottomCanvas))
+                _scrollBar.Template.FindName("PART_TopCanvas",    _scrollBar) is not Canvas topCanvas ||
+                _scrollBar.Template.FindName("PART_BottomCanvas", _scrollBar) is not Canvas bottomCanvas)
             {
                 return;
             }

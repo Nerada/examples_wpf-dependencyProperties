@@ -45,7 +45,6 @@ namespace DependencyProperties.Resources.ExtendedControls
             DependencyProperty.Register("ScrollViewer", typeof(ScrollViewer), typeof(SegmentedScrollBar),
                                         new PropertyMetadata(default(ScrollViewer), ScrollViewerChangedCallback));
 
-
         private readonly SegmentedScrollBarBehaviors _segmentedScrollBarBehaviors;
         private readonly SegmentedScrollBarDrawing   _segmentedScrollBarDrawing;
 
@@ -111,14 +110,14 @@ namespace DependencyProperties.Resources.ExtendedControls
 
         private static void ScrollViewerChangedCallback(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
         {
-            if (!(dependencyObject is SegmentedScrollBar scrollBar) || args.NewValue == null) return;
+            if (dependencyObject is not SegmentedScrollBar scrollBar || args.NewValue == null) return;
 
             scrollBar.UpdateBindings();
         }
 
         private static void SegmentBoundariesChangedCallback(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
         {
-            if (!(dependencyObject is SegmentedScrollBar scrollBar) || args.NewValue == null) return;
+            if (dependencyObject is not SegmentedScrollBar scrollBar || args.NewValue == null) return;
             if (!(scrollBar.SegmentBoundaries is { })) return;
 
             scrollBar._segmentedScrollBarDrawing.DrawSegmentBoundaries();
@@ -127,8 +126,8 @@ namespace DependencyProperties.Resources.ExtendedControls
 
         private static void SegmentAppearanceChangedCallback(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
         {
-            if (!(dependencyObject is SegmentedScrollBar scrollBar) || args.NewValue == null) return;
-            if (!(scrollBar.SegmentBoundaries is { })) return;
+            if (dependencyObject is not SegmentedScrollBar scrollBar || args.NewValue == null) return;
+            if (scrollBar.SegmentBoundaries is not { }) return;
 
             scrollBar._segmentedScrollBarDrawing.DrawSegmentBoundaries();
         }

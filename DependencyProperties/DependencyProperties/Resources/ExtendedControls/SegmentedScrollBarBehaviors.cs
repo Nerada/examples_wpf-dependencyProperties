@@ -97,20 +97,13 @@ namespace DependencyProperties.Resources.ExtendedControls
             // If we go to the left direction - set scrollbar value to the end of the previous segment.
             // If the direction is to the right - to the beginning of the next segment.
 
-            double? segmentValue;
-
             // Get current segment
-            switch (buttonType)
+            double? segmentValue = buttonType switch
             {
-                case ButtonType.LeftSegmentButton:
-                    segmentValue = Boundaries.LastOrDefault(b => b <= _scrollBar.Value);
-                    break;
-                case ButtonType.RightSegmentButton:
-                    segmentValue = Boundaries.FirstOrDefault(b => b > _scrollBar.Value);
-                    break;
-                default:
-                    throw new ArgumentException(@$"{nameof(OnSegmentButtonClick)}: + Unsupported button type used.");
-            }
+                ButtonType.LeftSegmentButton  => Boundaries.LastOrDefault(b => b  <= _scrollBar.Value),
+                ButtonType.RightSegmentButton => Boundaries.Find(b => b > _scrollBar.Value),
+                _                             => throw new ArgumentException($"{nameof(OnSegmentButtonClick)}: + Unsupported button type used.")
+            };
 
             // Check if there is no right/left
             if (!(segmentValue is { } segValue) || segValue == 0)
@@ -138,7 +131,6 @@ namespace DependencyProperties.Resources.ExtendedControls
             _scrollBar.Value = halfThumbValue < boundary ? boundary - _scrollBar.ViewportSize : boundary;
         }
 
-
         private void CheckViewPortSize()
         {
             var checkBoundaries = new List<double>(Boundaries);
@@ -162,10 +154,10 @@ namespace DependencyProperties.Resources.ExtendedControls
             }
         }
 
-        public double SmallestDifference(List<double> source)
+        private static double SmallestDifference(List<double> source)
         {
-            double difference = double.MaxValue;
-            for (int i = 1; i < source.Count; i++)
+            var difference = double.MaxValue;
+            for (var i = 1; i < source.Count; i++)
             {
                 difference = Math.Min(difference, source[i] - source[i - 1]);
             }
