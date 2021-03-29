@@ -5,12 +5,13 @@ Multiple extended controls based on dependency properties.
 1. ExtendedButton
 - Hover foreground and background colors.
 - Image and Hover image
-
+<br />
 2. ExtendedComboBox
 - Hover foreground and background colors.
 - Default tooltip behavior
 - Generic way of making IsDefault=true item bold
-
+<br />
 3. SegmentedScrollBar
 - Divided in visible segments
 - Jumping buttons and snipping behavior around segments
+<br />
