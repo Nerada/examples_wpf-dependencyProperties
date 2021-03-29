@@ -100,8 +100,8 @@ namespace DependencyProperties.Resources.ExtendedControls
             // Get current segment
             double? segmentValue = buttonType switch
             {
-                ButtonType.LeftSegmentButton  => Boundaries.LastOrDefault(b => b  <= _scrollBar.Value),
-                ButtonType.RightSegmentButton => Boundaries.Find(b => b > _scrollBar.Value),
+                ButtonType.LeftSegmentButton  => Boundaries.LastOrDefault(b => b <= _scrollBar.Value),
+                ButtonType.RightSegmentButton => Boundaries.Find(b => b          > _scrollBar.Value),
                 _                             => throw new ArgumentException($"{nameof(OnSegmentButtonClick)}: + Unsupported button type used.")
             };
 

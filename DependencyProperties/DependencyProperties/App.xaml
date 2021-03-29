@@ -6,6 +6,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Resources/ExtendedControls/ExtendedButtonRes.xaml" />
+                <ResourceDictionary Source="Resources/ExtendedControls/ExtendedComboBoxRes.xaml"/>
                 <ResourceDictionary Source="Resources/ExtendedControls/SegmentedScrollBarRes.xaml" />
                 <ResourceDictionary Source="Resources/ResourceDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>

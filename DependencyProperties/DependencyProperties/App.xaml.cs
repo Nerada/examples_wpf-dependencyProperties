@@ -15,7 +15,7 @@ namespace DependencyProperties
     {
         private void App_OnStartup(object sender, StartupEventArgs e)
         {
-            new DemoWindowExtendedButton().Show();
+            new DemoWindowExtendedControls().Show();
             new DemoWindowSegmentedScrollBar().Show();
         }
     }

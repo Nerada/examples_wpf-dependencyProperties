@@ -15,6 +15,7 @@
     <None Remove="Images\4.jpg" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="MathConverter" Version="2.1.0-alpha0001" />
     <PackageReference Include="Prism.Core" Version="8.0.0.1909" />
   </ItemGroup>
   <ItemGroup>
@@ -24,7 +25,7 @@
     <Resource Include="Images\4.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <Page Update="DemoWindowExtendedButton.xaml">
+    <Page Update="DemoWindowExtendedControls.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <SubType>Designer</SubType>
     </Page>
